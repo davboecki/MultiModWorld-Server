@@ -12,6 +12,6 @@ public class PacketHandleEventListener extends CustomEventListener {
 		}
 	}
 
-	public void onPacketSendEvent(PacketSendEvent event){};
+	public void onPacketSendEvent(PacketSendEvent event){}
 
 }

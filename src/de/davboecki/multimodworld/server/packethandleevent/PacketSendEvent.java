@@ -3,6 +3,7 @@ package de.davboecki.multimodworld.server.packethandleevent;
 import net.minecraft.server.Packet;
 
 import org.bukkit.craftbukkit.entity.CraftPlayer;
+import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 
@@ -23,6 +24,10 @@ public class PacketSendEvent extends Event implements Cancellable{
 	@Override
 	public void setCancelled(boolean flag) {
 		Cancelled = flag;
+	}
+	
+	public Player getPlayer(){
+		return player;
 	}
 	
 	public Packet packet;
