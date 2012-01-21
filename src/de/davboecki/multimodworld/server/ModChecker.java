@@ -17,7 +17,6 @@ import de.davboecki.multimodworld.server.plugin.IModWorldHandlePlugin;
 public class ModChecker {
 	
 	private static IModWorldHandlePlugin staticplugin = null;
-	private static boolean pluginfound = false;
 	
 	private static IModWorldHandlePlugin checkField(Field field,Plugin instance) throws Exception{
 		field.setAccessible(true);
@@ -33,7 +32,7 @@ public class ModChecker {
 		boolean pluginfound = false;
 		boolean morepluginsfound = false;
 		IModWorldHandlePlugin plugin = null;
-		for(Plugin instance:plugins){
+		for(Plugin instance:plugins) {
 			try {
 				if(instance instanceof IModWorldHandlePlugin){
 					if(pluginfound && plugin != instance){
@@ -44,28 +43,19 @@ public class ModChecker {
 						plugin = (IModWorldHandlePlugin)instance;
 					}
 				} else {
-					Field PluginField = instance.getClass().getDeclaredField("IModWorldHandlePlugin");
-					if((plugin = checkField(PluginField,instance)) != null) {
-						if(pluginfound && plugin != instance){
-							morepluginsfound = true;
-							break;
-						} else {
-							pluginfound = true;
-							plugin = (IModWorldHandlePlugin)instance;
-						}
-					} /* else {
-						for(Field field:instance.getClass().getDeclaredFields()){
+					try {
+						for(Field field:instance.getClass().getDeclaredFields()) {
 							if((plugin = checkField(field,instance)) != null){
-								if(pluginfound && plugin != instance){
+								if(pluginfound && !plugin.equals(field.get(instance))){
 									morepluginsfound = true;
 									break;
 								} else {
 									pluginfound = true;
-									plugin = (IModWorldHandlePlugin)instance;
+									plugin = (IModWorldHandlePlugin)field.get(instance);
 								}
 							}
-						} 
-					}*/
+						}
+					} catch(NoClassDefFoundError e){}
 				}
 			} catch(Exception e){}
 		}
@@ -81,7 +71,6 @@ public class ModChecker {
 			//server.shutdown();
 			//throw new IllegalStateException("[MultiModWorld] No ModWorldHandlePlugin found.");
 		}
-		pluginfound = true;
 		return staticplugin = plugin;
 	}
 
@@ -89,27 +78,27 @@ public class ModChecker {
 	private static ArrayList<ModBlockAddList> AddedBlockList = new ArrayList<ModBlockAddList>();
 
 	public static boolean isIdAllowed(String WorldName, int id){
-		if(!pluginfound) return true;
+		if(getModWorldHandlePlugin() == null) return true;
 		return getModWorldHandlePlugin().isIdAllowed(WorldName, id);
 	}
 	
 	public static boolean isCraftingAllowed(String WorldName, int id){
-		if(!pluginfound) return true;
+		if(getModWorldHandlePlugin() == null) return true;
 		return getModWorldHandlePlugin().isCraftingAllowed(WorldName, id);
 	}
 
 	public static boolean isEntityAllowed(String WorldName, net.minecraft.server.Entity entity){
-		if(!pluginfound) return true;
+		if(getModWorldHandlePlugin() == null) return true;
 		return getModWorldHandlePlugin().isEntityAllowed(WorldName, entity);
 	}
 	
 	public static boolean hasWorldSetting(String WorldName, String Setting){
-		if(!pluginfound) return false;
+		if(getModWorldHandlePlugin() == null) return true;
 		return getModWorldHandlePlugin().hasWorldSetting(WorldName, Setting);
 	}
 	
 	public static World getModWorldbyTag(String Tag){
-		if(!pluginfound) return (World)ModLoader.getMinecraftServerInstance().worlds.get(0);
+		if(getModWorldHandlePlugin() == null) return (World)ModLoader.getMinecraftServerInstance().worlds.get(0);
 		for(int i = 0; i < ModLoader.getMinecraftServerInstance().worlds.size();i++){
 			  World world = (World)ModLoader.getMinecraftServerInstance().worlds.get(i);
 			  if(hasWorldSetting(world.getWorld().getName(), Tag)) {
