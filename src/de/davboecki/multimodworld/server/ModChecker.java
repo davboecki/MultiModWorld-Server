@@ -45,19 +45,22 @@ public class ModChecker {
 				} else {
 					try {
 						for(Field field:instance.getClass().getDeclaredFields()) {
-							if((plugin = checkField(field,instance)) != null){
-								if(pluginfound && !plugin.equals(field.get(instance))){
+							IModWorldHandlePlugin plugininstance = null;
+							if((plugininstance = checkField(field,instance)) != null){
+								if(pluginfound) {
 									morepluginsfound = true;
 									break;
 								} else {
 									pluginfound = true;
-									plugin = (IModWorldHandlePlugin)field.get(instance);
+									plugin = (IModWorldHandlePlugin)plugininstance;
 								}
 							}
 						}
 					} catch(NoClassDefFoundError e){}
 				}
-			} catch(Exception e){}
+			} catch(Exception e){
+				e.printStackTrace();
+			}
 		}
 		if(morepluginsfound){
 			server.getLogger().severe("[MultiModWorld] More then one ModWorldHandlePlugin found.");
