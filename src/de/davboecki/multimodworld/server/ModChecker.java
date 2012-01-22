@@ -127,4 +127,8 @@ public class ModChecker {
 	public static ArrayList<ModBlockAddList> getAddedBlockList(){
 		return (ArrayList<ModBlockAddList>)Collections.unmodifiableList(AddedBlockList);
 	}
+	
+	public String getVerion(){
+		return "v1.0.2";
+	}
 }
