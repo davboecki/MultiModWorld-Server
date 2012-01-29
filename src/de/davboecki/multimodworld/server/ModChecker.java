@@ -129,6 +129,6 @@ public class ModChecker {
 	}
 	
 	public static String getVerion(){
-		return "v1.0.3";
+		return "v1.1.0";
 	}
 }
