@@ -139,7 +139,7 @@ public class ModChecker {
 			net.minecraft.server.ModLoaderMp.class,
 			net.minecraft.server.NetLoginHandler.class,
 			net.minecraft.server.NetServerHandler.class,
-			net.minecraft.server.WorldChunkManager.class
+			net.minecraft.server.World.class
 			};
 	
 	public static boolean checkNetModded() {
@@ -147,7 +147,6 @@ public class ModChecker {
 		for(Class toCheck:CheckList) {
 			try {
 				Field version = toCheck.getDeclaredField("MultiModWorldVersion");
-				version.setAccessible(true);
 				String versionString = (String)version.get(toCheck.newInstance());
 				if(!versionString.equalsIgnoreCase(getVersion())) {
 					System.out.print("Class: '"+toCheck.getName()+"' hast version '"+versionString+"' but it should be '"+getVersion()+"'.");
@@ -177,6 +176,6 @@ public class ModChecker {
 	}
 	
 	public static String getVersion(){
-		return "v1.1.0";
+		return "v1.1.1";
 	}
 }
