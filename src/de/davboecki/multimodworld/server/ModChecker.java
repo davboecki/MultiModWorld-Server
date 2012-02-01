@@ -128,7 +128,55 @@ public class ModChecker {
 		return (ArrayList<ModBlockAddList>)Collections.unmodifiableList(AddedBlockList);
 	}
 	
-	public static String getVerion(){
+	/*
+	 * List of classes to be checked for version compare to this verion.
+	 */
+	private static final Class[] CheckList = new Class[]{
+			net.minecraft.server.ContainerPlayer.class,
+			net.minecraft.server.ContainerWorkbench.class,
+			net.minecraft.server.ItemStack.class,
+			net.minecraft.server.ModLoader.class,
+			net.minecraft.server.ModLoaderMp.class,
+			net.minecraft.server.NetLoginHandler.class,
+			net.minecraft.server.NetServerHandler.class,
+			net.minecraft.server.WorldChunkManager.class
+			};
+	
+	public static boolean checkNetModded() {
+		boolean answer = true;
+		for(Class toCheck:CheckList) {
+			try {
+				Field version = toCheck.getDeclaredField("MultiModWorldVersion");
+				version.setAccessible(true);
+				String versionString = (String)version.get(toCheck.newInstance());
+				if(!versionString.equalsIgnoreCase(getVersion())) {
+					System.out.print("Class: '"+toCheck.getName()+"' hast version '"+versionString+"' but it should be '"+getVersion()+"'.");
+					answer = false;
+				}
+			} catch (SecurityException e) {
+				e.printStackTrace();
+				answer = false;
+			} catch (NoSuchFieldException e) {
+				System.out.print("Class: '"+toCheck.getName()+"' is not modded.");
+				answer = false;
+			} catch (IllegalArgumentException e) {
+				e.printStackTrace();
+				answer = false;
+			} catch (IllegalAccessException e) {
+				e.printStackTrace();
+				answer = false;
+			} catch (InstantiationException e) {
+				e.printStackTrace();
+				answer = false;
+			} catch (Exception e) {
+				e.printStackTrace();
+				answer = false;
+			}
+		}
+		return answer;
+	}
+	
+	public static String getVersion(){
 		return "v1.1.0";
 	}
 }
