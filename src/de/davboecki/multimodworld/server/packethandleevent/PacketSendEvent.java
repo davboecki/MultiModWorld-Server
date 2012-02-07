@@ -6,9 +6,11 @@ import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
+import org.bukkit.event.HandlerList;
 
 public class PacketSendEvent extends Event implements Cancellable{
-	
+
+	private static final HandlerList handlers = new HandlerList();
 	private boolean Cancelled = false;
 	
 	public PacketSendEvent(CraftPlayer player) {
@@ -32,5 +34,13 @@ public class PacketSendEvent extends Event implements Cancellable{
 	
 	public Packet packet;
 	private CraftPlayer player;
-	
+
+	// Handlers
+    public HandlerList getHandlers() {
+        return handlers;
+    }
+ 
+    public static HandlerList getHandlerList() {
+        return handlers;
+    }
 }

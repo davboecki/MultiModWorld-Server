@@ -4,9 +4,12 @@ import java.util.ArrayList;
 
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
+import org.bukkit.event.HandlerList;
 import org.bukkit.event.player.PlayerEvent;
 
 public class ModsMissingHandleEvent extends Event{
+
+	private static final HandlerList handlers = new HandlerList();
 
 	public ModsMissingHandleEvent(String name) {
 		super(name);
@@ -31,4 +34,12 @@ public class ModsMissingHandleEvent extends Event{
 		player = pplayer;
 	}
 	
+	// Handlers
+    public HandlerList getHandlers() {
+        return handlers;
+    }
+ 
+    public static HandlerList getHandlerList() {
+        return handlers;
+    }
 }
