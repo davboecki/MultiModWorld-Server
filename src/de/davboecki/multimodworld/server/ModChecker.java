@@ -17,6 +17,7 @@ import de.davboecki.multimodworld.server.plugin.IModWorldHandlePlugin;
 public class ModChecker {
 	
 	private static IModWorldHandlePlugin staticplugin = null;
+	private static boolean firsterror = true;
 	
 	private static IModWorldHandlePlugin checkField(Field field,Plugin instance) throws Exception{
 		field.setAccessible(true);
@@ -63,13 +64,15 @@ public class ModChecker {
 			}
 		}
 		if(morepluginsfound){
-			server.getLogger().severe("[MultiModWorld] More then one ModWorldHandlePlugin found.");
+			if(firsterror) server.getLogger().severe("[MultiModWorld] More then one ModWorldHandlePlugin found.");
+			firsterror = false;
 			return null;
 			//server.shutdown();
 			//throw new IllegalStateException("[MultiModWorld] More then one ModWorldHandlePlugin found.");
 		}
 		if(!pluginfound){
-			server.getLogger().severe("[MultiModWorld] No ModWorldHandlePlugin found.");
+			if(firsterror) server.getLogger().severe("[MultiModWorld] No ModWorldHandlePlugin found.");
+			firsterror = false;
 			return null;
 			//server.shutdown();
 			//throw new IllegalStateException("[MultiModWorld] No ModWorldHandlePlugin found.");
