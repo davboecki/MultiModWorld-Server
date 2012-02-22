@@ -19,12 +19,14 @@ public class ModChecker {
 	private static IModWorldHandlePlugin staticplugin = null;
 	private static boolean firsterror = true;
 	
+	/*
 	private static IModWorldHandlePlugin checkField(Field field,Plugin instance) throws Exception{
 		field.setAccessible(true);
 		Object pluginobject;
 		pluginobject = field.get(instance);
 		return (pluginobject instanceof IModWorldHandlePlugin?((IModWorldHandlePlugin)pluginobject):null);
 	}
+	
 	
 	private static IModWorldHandlePlugin getModWorldHandlePlugin() {
 		if(staticplugin != null) return staticplugin;
@@ -78,6 +80,25 @@ public class ModChecker {
 			//throw new IllegalStateException("[MultiModWorld] No ModWorldHandlePlugin found.");
 		}
 		return staticplugin = plugin;
+	} */
+	
+	public static void registerIModWorldHandlePlugin(IModWorldHandlePlugin plugin) {
+		if(staticplugin == null) {
+			staticplugin = plugin;
+		} else if(firsterror) {
+			CraftServer server = (CraftServer)Bukkit.getServer();
+			server.getLogger().severe("[MultiModWorld] Tried to register another ModWorldHandlePlugin.");
+			firsterror = false;
+		}
+	}
+	
+	public static IModWorldHandlePlugin getModWorldHandlePlugin() {
+		if(firsterror && staticplugin == null) {
+			CraftServer server = (CraftServer)Bukkit.getServer();
+			server.getLogger().severe("[MultiModWorld] No ModWorldHandlePlugin registered.");
+			firsterror = false;
+		}
+		return staticplugin;
 	}
 
 	private static ArrayList<BaseMod> ModList = new ArrayList<BaseMod>();
@@ -179,6 +200,6 @@ public class ModChecker {
 	}
 	
 	public static String getVersion(){
-		return "v1.1.1";
+		return "v1.1.2";
 	}
 }
