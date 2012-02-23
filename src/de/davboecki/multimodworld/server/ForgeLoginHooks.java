@@ -1,6 +1,7 @@
 package de.davboecki.multimodworld.server;
 
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.bukkit.craftbukkit.entity.CraftPlayer;
@@ -16,60 +17,61 @@ import forge.ForgeHooksServer;
 import forge.MessageManager;
 
 public class ForgeLoginHooks {
+
+	private static ArrayList<String> ConfirmedPlayers = new ArrayList<String>();
+	private static ArrayList<String> PackedSendedPlayers = new ArrayList<String>();
 	
-	private static HashMap<String,ForgeLoginHooksSettings> settingsMap = new HashMap<String,ForgeLoginHooksSettings>();
-	
-	public static void LogintoMod(Player player) {
-		if(!settingsMap.containsKey(player.getName())){
-			return;
-		}
-		ForgeLoginHooksSettings settings = settingsMap.get(player.getName());
-		ForgeHooksServer.init();
-
-        ForgeHooks.onLogin(settings.netloginhandler.networkManager, settings.packet1login);
-
-        String[] localObject1 = MessageManager.getInstance().getRegisteredChannels(settings.netloginhandler.networkManager);
-        StringBuilder localStringBuilder = new StringBuilder();
-        localStringBuilder.append("Forge");
-        for (String str : localObject1)
-        {
-          localStringBuilder.append("");
-          localStringBuilder.append(str);
-        }
-        Packet250CustomPayload packet = new Packet250CustomPayload();
-        packet.tag = "REGISTER";
-        try {
-      	  packet.data = localStringBuilder.toString().getBytes("UTF8");
-        } catch (UnsupportedEncodingException localUnsupportedEncodingException) {
-          localUnsupportedEncodingException.printStackTrace();
-        }
-        packet.length = packet.data.length;
-        ((CraftPlayer)player).getHandle().netServerHandler.sendPacket(packet);
-
-        ModLoaderMp.HandleAllLogins(((CraftPlayer)player).getHandle());
+	public static void confirmPlayer(Player player) {
+		ConfirmedPlayers.add(player.getName());
 	}
 	
-	public static void registerLogin(CraftPlayer player, ForgeLoginHooksSettings settings){
-		if(settingsMap.containsKey(player.getName())) {
-			HashMap<String,ForgeLoginHooksSettings> newsettingsMap = new HashMap<String,ForgeLoginHooksSettings>();
-			for(Object part: settingsMap.keySet()) {
-				if(!part.equals(player.getName())){
-					newsettingsMap.put(player.getName(), settingsMap.get(part));
+	public static void removePlayer(Player player) {
+		Object remove = "empty";
+		while(remove != null) {
+			remove = null;
+			for(Object part:ConfirmedPlayers.toArray()) {
+				if(player.getName().equalsIgnoreCase((String)part)) {
+					remove = part;
+					break;
 				}
 			}
-			settingsMap = newsettingsMap;
+			ConfirmedPlayers.remove(remove);
 		}
-		settingsMap.put(player.getName(), settings);
 	}
 	
-	public static class ForgeLoginHooksSettings {
-		NetLoginHandler netloginhandler;
-		Packet1Login packet1login;
-		boolean ForgeClientInsatlled;
-		public ForgeLoginHooksSettings(boolean ForgeClientInsatlled, NetLoginHandler netloginhandler, Packet1Login packet1login) {
-			this.ForgeClientInsatlled = ForgeClientInsatlled;
-			this.netloginhandler = netloginhandler;
-			this.packet1login = packet1login;
+	public static boolean isPlayerConfirmed(Player player) {
+		for(Object part:ConfirmedPlayers.toArray()) {
+			if(player.getName().equalsIgnoreCase((String)part)) {
+				return true;
+			}
 		}
+		return false;
+	}
+
+	public static void packetSended(Player player) {
+		PackedSendedPlayers.add(player.getName());
+	}
+
+	public static void removeSended(Player player) {
+		Object remove = "empty";
+		while(remove != null) {
+			remove = null;
+			for(Object part:PackedSendedPlayers.toArray()) {
+				if(player.getName().equalsIgnoreCase((String)part)) {
+					remove = part;
+					break;
+				}
+			}
+			PackedSendedPlayers.remove(remove);
+		}
+	}
+	
+	public static boolean isPlayerSended(Player player) {
+		for(Object part:PackedSendedPlayers.toArray()) {
+			if(player.getName().equalsIgnoreCase((String)part)) {
+				return true;
+			}
+		}
+		return false;
 	}
 }
