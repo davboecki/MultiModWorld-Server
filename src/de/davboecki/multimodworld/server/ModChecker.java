@@ -6,10 +6,12 @@ import java.util.Collections;
 
 import net.minecraft.server.BaseMod;
 import net.minecraft.server.ModLoader;
+import net.minecraft.server.Packet;
 import net.minecraft.server.World;
 
 import org.bukkit.Bukkit;
 import org.bukkit.craftbukkit.CraftServer;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
 import de.davboecki.multimodworld.server.plugin.IModWorldHandlePlugin;
@@ -122,6 +124,11 @@ public class ModChecker {
 	public static boolean hasWorldSetting(String WorldName, String Setting){
 		if(getModWorldHandlePlugin() == null) return true;
 		return getModWorldHandlePlugin().hasWorldSetting(WorldName, Setting);
+	}
+	
+	public static boolean SendPacket(Packet packet, Player player) {
+		if(getModWorldHandlePlugin() == null) return true;
+		return getModWorldHandlePlugin().PacketSend(packet, player);
 	}
 	
 	public static World getModWorldbyTag(String Tag){
