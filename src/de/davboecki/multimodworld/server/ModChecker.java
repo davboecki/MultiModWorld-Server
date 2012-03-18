@@ -159,6 +159,11 @@ public class ModChecker {
 		return (ArrayList<ModBlockAddList>)Collections.unmodifiableList(AddedBlockList);
 	}
 	
+	public static net.minecraft.server.Entity replaceEntity(String WorldName,net.minecraft.server.Entity entity){
+		if(getModWorldHandlePlugin() == null) return entity;
+		return getModWorldHandlePlugin().ReplaceEntity(WorldName, entity);
+	}
+	
 	/*
 	 * List of classes to be checked for version compare to this verion.
 	 */
