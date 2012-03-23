@@ -11,9 +11,7 @@ public class ModsOKHandleEvent extends Event{
 
 	private static final HandlerList handlers = new HandlerList();
 
-	public ModsOKHandleEvent(String name) {
-		super(name);
-	}
+	public ModsOKHandleEvent() {}
 
 	private Player player;
 	

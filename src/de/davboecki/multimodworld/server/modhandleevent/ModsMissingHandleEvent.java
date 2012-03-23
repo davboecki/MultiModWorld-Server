@@ -11,9 +11,7 @@ public class ModsMissingHandleEvent extends Event{
 
 	private static final HandlerList handlers = new HandlerList();
 
-	public ModsMissingHandleEvent(String name) {
-		super(name);
-	}
+	public ModsMissingHandleEvent() {}
 
 	private ArrayList<String> MissingModList;
 	private Player player;
