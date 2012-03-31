@@ -1,4 +1,4 @@
-package de.davboecki.multimodworld.server.plugin;
+package de.davboecki.multimodworld.api.plugin;
 
 import org.bukkit.entity.Player;
 

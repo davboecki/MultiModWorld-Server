@@ -1,4 +1,4 @@
-package de.davboecki.multimodworld.server;
+package de.davboecki.multimodworld.api;
 
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
