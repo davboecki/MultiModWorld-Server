@@ -2,6 +2,7 @@ package de.davboecki.multimodworld.api;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.logging.Logger;
 
 import net.minecraft.server.BaseMod;
 import net.minecraft.server.Entity;
@@ -104,7 +105,29 @@ public class ModChecker {
 			return entity;
 		}
 	}
+
+	private static ArrayList<String> PopulatedWorlds = new ArrayList<String>();
+	private static String LastWorld = ""; 
 	
+	public static boolean populateChunk(World var3,Logger logger) {
+	    String Name = var3.getWorld().getName();
+		boolean Log = false;
+	    if(LastWorld.equals(Name)){
+	    	if(!PopulatedWorlds.contains(Name)){
+	    		PopulatedWorlds.add(Name);
+	    	Log = true;
+	    	LastWorld = Name;
+	    	}
+	    }
+	    if(!ModChecker.hasWorldSetting(Name, "PopulateChunk")){
+	    	if(Log)
+	    		logger.info("[MultiModWorld] Don't PopulateChunk in world: "+Name);
+	    	return false;
+	    }
+		if(Log)
+			logger.info("[MultiModWorld] PopulateChunk in world: "+Name);
+		return true;
+	}
 	
 	public static World getModWorldbyTag(String Tag){
 		if(getModWorldHandlePlugin() == null) return (World)ModLoader.getMinecraftServerInstance().worlds.get(0);
