@@ -2,12 +2,15 @@ package de.davboecki.multimodworld.api;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.logging.Logger;
 
 import net.minecraft.server.BaseMod;
 import net.minecraft.server.Entity;
+import net.minecraft.server.EntityPlayer;
 import net.minecraft.server.ModLoader;
 import net.minecraft.server.Packet;
+import net.minecraft.server.Packet230ModLoader;
 import net.minecraft.server.World;
 
 import org.bukkit.Bukkit;
@@ -42,7 +45,11 @@ public class ModChecker {
 		}
 		return staticplugin;
 	}
-
+	
+	public static boolean pluginregistered() {
+		return getModWorldHandlePlugin() == null;
+	}
+	
 	private static ArrayList<BaseMod> ModList = new ArrayList<BaseMod>();
 	private static ArrayList<ModAddList> AddedBlockList = new ArrayList<ModAddList>();
 
@@ -106,6 +113,16 @@ public class ModChecker {
 		}
 	}
 
+	public static boolean handleModPacketResponse(Packet230ModLoader var0, EntityPlayer var1, List bannedMods) {
+		if(getModWorldHandlePlugin() == null) return false;
+		try {
+			return getModWorldHandlePlugin().handleModPacketResponse(var0, var1, bannedMods);
+		} catch(Exception e) {
+			PluginExceptionHandler.HandleException(e,ExceptionType.handleModResponse);
+			return false;
+		}
+	}
+	
 	private static ArrayList<String> PopulatedWorlds = new ArrayList<String>();
 	private static String LastWorld = ""; 
 	

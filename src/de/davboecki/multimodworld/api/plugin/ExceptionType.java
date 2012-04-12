@@ -6,5 +6,6 @@ public enum ExceptionType {
 	isEntityAllowed,
 	hasWorldSetting,
 	SendPacket,
-	replaceEntity
+	replaceEntity,
+	handleModResponse
 }
