@@ -162,8 +162,8 @@ public class ModChecker {
 		ModList.add(Mod);
 	}
 	
-	public static void ModAddedBlockofEntity(BaseMod Mod, int[] Ids, Class<Entity>[] Entities){
-		AddedBlockList.add(new ModAddList(Mod,Ids,Entities));
+	public static void ModAddedBlockofEntity(BaseMod Mod, int[] Ids, Class<Entity>[] Entities, Class<Packet>[] Packets){
+		AddedBlockList.add(new ModAddList(Mod,Ids,Entities,Packets));
 	}
 	
 	public static ArrayList<BaseMod> getModList(){

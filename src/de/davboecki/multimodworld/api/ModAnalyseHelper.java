@@ -12,6 +12,7 @@ import net.minecraft.server.Block;
 import net.minecraft.server.Entity;
 import net.minecraft.server.EntityTypes;
 import net.minecraft.server.Item;
+import net.minecraft.server.Packet;
 
 public class ModAnalyseHelper {
 	
@@ -21,33 +22,58 @@ public class ModAnalyseHelper {
 	private static class Information {
 		ArrayList<Integer> preIds;
 		ArrayList<EntitySetting> preEntities;
+		ArrayList<Class<Packet>> prePackets;
 	}
 	
 	public static int preMod() {
-		Information info = new Information();
-		info.preIds = getIdArrayList();
-		info.preEntities = getEntitySettingList();
-		InfotmationList.put(++key,info);
-		return key;
+		try {
+			Information info = new Information();
+			info.preIds = getIdArrayList();
+			info.preEntities = getEntitySettingList();
+			info.prePackets = getPacketList();
+			InfotmationList.put(++key,info);
+			return key;
+		} catch(Exception e) {
+			return -1;
+		}
 	}
 	
 	@SuppressWarnings("unchecked")
 	public static void postMod(int id, BaseMod mod) {
+		if(id == -1) return;
 		try {
 			Information info = InfotmationList.get(id);
 			InfotmationList.remove(id);
 			ArrayList<Integer> postIds = getIdArrayList();
 			ArrayList<Object> difIds = getDifference(info.preIds, postIds);
-			ArrayList<Integer> postEntities = getIdArrayList();
+			ArrayList<EntitySetting> postEntities = getEntitySettingList();
 			ArrayList<Object> difEntities = getDifference(info.preEntities, postEntities);
-			if(difIds.size() > 0 || difEntities.size() > 0){
-		    	ModChecker.ModAddedBlockofEntity(mod, getIntArray(difIds),(Class<Entity>[]) getClassArray(difEntities));
+			ArrayList<Class<Packet>> postPackets = getPacketList();
+			ArrayList<Object> difPackets = getDifference(info.prePackets, postPackets);
+			if(difIds.size() > 0 || difEntities.size() > 0 || difPackets.size() > 0){
+		    	ModChecker.ModAddedBlockofEntity(mod, getIntArray(difIds),(Class<Entity>[]) getClassArray(difEntities), (Class<Packet>[]) getClassArray(difPackets));
 		    }
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
 	}
-
+	
+	@SuppressWarnings("unchecked")
+	private static ArrayList<Class<Packet>> getPacketList() {
+		ArrayList<Class<Packet>> List = new ArrayList<Class<Packet>>();
+		try {
+			Field a = Packet.class.getDeclaredField("a");
+			a.setAccessible(true);
+			HashMap<Class<Packet>,Integer> Packets = (HashMap<Class<Packet>,Integer>)a.get(null);
+			for(Class<Packet> Packet:Packets.keySet()){
+				List.add(Packet);
+			}
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+		return List;
+	}
+	
 	@SuppressWarnings("unchecked")
 	private static ArrayList<EntitySetting> getEntitySettingList() {
 		ArrayList<EntitySetting> List = new ArrayList<EntitySetting>();
