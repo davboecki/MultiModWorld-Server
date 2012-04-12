@@ -167,7 +167,7 @@ public class ModChecker {
 	}
 	
 	public static ArrayList<BaseMod> getModList(){
-		return (ArrayList<BaseMod>)Collections.unmodifiableList(ModList);
+		return (ArrayList<BaseMod>)ModList;
 	}
 	
 	public static ArrayList<ModAddList> getAddedBlockList(){
