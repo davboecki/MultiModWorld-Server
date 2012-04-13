@@ -14,6 +14,7 @@ public class ModAddList{
 		this.Mod = Mod;
 		this.Ids = Ids;
 		this.Entities = Entities;
+		this.Packets = Packets;
 	}
 	
 	public BaseMod getMod() {
