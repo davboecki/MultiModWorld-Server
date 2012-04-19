@@ -5,10 +5,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import cpw.mods.fml.common.ModContainer;
+
 import de.davboecki.multimodworld.api.plugin.EntitySetting;
 
 import net.minecraft.server.BaseMod;
 import net.minecraft.server.Block;
+import net.minecraft.server.CraftingManager;
+import net.minecraft.server.CraftingRecipe;
 import net.minecraft.server.Entity;
 import net.minecraft.server.EntityTypes;
 import net.minecraft.server.Item;
@@ -23,6 +27,7 @@ public class ModAnalyseHelper {
 		ArrayList<Integer> preIds;
 		ArrayList<EntitySetting> preEntities;
 		ArrayList<Class<Packet>> prePackets;
+		ArrayList<CraftingRecipe> preRecipies;
 	}
 	
 	public static int preMod() {
@@ -31,6 +36,7 @@ public class ModAnalyseHelper {
 			info.preIds = getIdArrayList();
 			info.preEntities = getEntitySettingList();
 			info.prePackets = getPacketList();
+			info.preRecipies = getRecipeList();
 			InfotmationList.put(++key,info);
 			return key;
 		} catch(Exception e) {
@@ -39,19 +45,33 @@ public class ModAnalyseHelper {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public static void postMod(int id, BaseMod mod) {
+	public static void postMod(int id, ModContainer mod) {
 		if(id == -1) return;
+		if(mod == null) {
+			InfotmationList.remove(id);
+			return;
+		}
 		try {
 			Information info = InfotmationList.get(id);
 			InfotmationList.remove(id);
 			ArrayList<Integer> postIds = getIdArrayList();
-			ArrayList<Object> difIds = getDifference(info.preIds, postIds);
+			ArrayList<Object> addedIds = getAdditions(info.preIds, postIds);
 			ArrayList<EntitySetting> postEntities = getEntitySettingList();
-			ArrayList<Object> difEntities = getDifference(info.preEntities, postEntities);
+			ArrayList<Object> addedEntities = getAdditions(info.preEntities, postEntities);
 			ArrayList<Class<Packet>> postPackets = getPacketList();
-			ArrayList<Object> difPackets = getDifference(info.prePackets, postPackets);
-			if(difIds.size() > 0 || difEntities.size() > 0 || difPackets.size() > 0){
-		    	ModChecker.ModAddedBlockofEntity(mod, getIntArray(difIds),(Class<Entity>[]) getClassArray(difEntities), (Class<Packet>[]) getClassArray(difPackets));
+			ArrayList<Object> addedPackets = getAdditions(info.prePackets, postPackets);
+			ArrayList<CraftingRecipe> postRecipies = getRecipeList();
+			ArrayList<Object> addedRecipies = getAdditions(info.preRecipies, postRecipies);
+			ArrayList<Object> removedRecipies = getAdditions(postRecipies, info.preRecipies);
+			if(addedIds.size() > 0 || addedEntities.size() > 0 || addedPackets.size() > 0 || addedRecipies.size() > 0){
+		    	ModChecker.ModAddedBlockofEntity(
+		    			mod, 
+		    			getIntArray(addedIds),
+		    			(Class<Entity>[]) getClassArray(addedEntities), 
+		    			(Class<Packet>[]) getClassArray(addedPackets), 
+		    			(CraftingRecipe[]) getCraftingRecipeArray(addedRecipies), 
+		    			(CraftingRecipe[]) getCraftingRecipeArray(removedRecipies)
+		    	);
 		    }
 		} catch(Exception e) {
 			e.printStackTrace();
@@ -112,17 +132,14 @@ public class ModAnalyseHelper {
 		return List;
 	}
 	
-	private static ArrayList<Object> getDifference(ArrayList<?> List1 ,ArrayList<?> List2){
+	private static ArrayList<CraftingRecipe> getRecipeList() {
+		return (ArrayList<CraftingRecipe>) CraftingManager.getInstance().getRecipies();
+	}
+	
+	private static ArrayList<Object> getAdditions(ArrayList<?> Base ,ArrayList<?> Additions){
 		ArrayList<Object> List = new ArrayList<Object>();
-		for(Object id:List1){
-			if(!List2.contains(id)){
-				if(!List.contains(id)){
-					List.add(id);
-				}
-			}
-		}
-		for(Object id:List2){
-			if(!List1.contains(id)){
+		for(Object id:Additions){
+			if(!Base.contains(id)){
 				if(!List.contains(id)){
 					List.add(id);
 				}
@@ -152,5 +169,15 @@ public class ModAnalyseHelper {
 		}
 		return Array;
 	}
-	
+
+	private static CraftingRecipe[] getCraftingRecipeArray(ArrayList<Object> List) {
+		CraftingRecipe[] Array = new CraftingRecipe[List.size()];
+		int i=0;
+		for(Object value:List){
+			if(value instanceof CraftingRecipe){
+				Array[i++] = (CraftingRecipe)value;
+			}
+		}
+		return Array;
+	}
 }

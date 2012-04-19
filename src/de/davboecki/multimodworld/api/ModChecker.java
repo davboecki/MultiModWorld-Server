@@ -5,22 +5,25 @@ import java.util.Collections;
 import java.util.List;
 import java.util.logging.Logger;
 
-import net.minecraft.server.BaseMod;
+import net.minecraft.server.CraftingRecipe;
 import net.minecraft.server.Entity;
 import net.minecraft.server.EntityPlayer;
 import net.minecraft.server.ModLoader;
+import net.minecraft.server.NetServerHandler;
 import net.minecraft.server.Packet;
-import net.minecraft.server.Packet230ModLoader;
 import net.minecraft.server.World;
 
 import org.bukkit.Bukkit;
 import org.bukkit.craftbukkit.CraftServer;
 import org.bukkit.entity.Player;
 
+import cpw.mods.fml.common.ModContainer;
+
 import de.davboecki.multimodworld.api.plugin.ExceptionType;
 import de.davboecki.multimodworld.api.plugin.IModWorldHandlePlugin;
 import de.davboecki.multimodworld.api.plugin.ModAddList;
 import de.davboecki.multimodworld.api.plugin.PluginExceptionHandler;
+import forge.packets.PacketModList;
 
 public class ModChecker {
 	
@@ -50,7 +53,7 @@ public class ModChecker {
 		return getModWorldHandlePlugin() == null;
 	}
 	
-	private static ArrayList<BaseMod> ModList = new ArrayList<BaseMod>();
+	private static ArrayList<ModContainer> ModList = new ArrayList<ModContainer>();
 	private static ArrayList<ModAddList> AddedBlockList = new ArrayList<ModAddList>();
 
 	public static boolean isIdAllowed(String WorldName, int id){
@@ -113,10 +116,10 @@ public class ModChecker {
 		}
 	}
 
-	public static boolean handleModPacketResponse(Packet230ModLoader var0, EntityPlayer var1, List bannedMods) {
+	public static boolean handleModPacketResponse(NetServerHandler net, PacketModList pkt) {
 		if(getModWorldHandlePlugin() == null) return false;
 		try {
-			return getModWorldHandlePlugin().handleModPacketResponse(var0, var1, bannedMods);
+			return getModWorldHandlePlugin().handleModPacketResponse(net.player, pkt);
 		} catch(Exception e) {
 			PluginExceptionHandler.HandleException(e,ExceptionType.handleModResponse);
 			return false;
@@ -146,6 +149,16 @@ public class ModChecker {
 		return true;
 	}
 	
+	public static List replaceRecipies(List recipies) {
+		if(getModWorldHandlePlugin() == null) return null;
+		try {
+			return getModWorldHandlePlugin().replaceRecipies(recipies);
+		} catch(Exception e) {
+			PluginExceptionHandler.HandleException(e,ExceptionType.replaceRecipies);
+			return null;
+		}
+	}
+
 	public static World getModWorldbyTag(String Tag){
 		if(getModWorldHandlePlugin() == null) return (World)ModLoader.getMinecraftServerInstance().worlds.get(0);
 		for(int i = 0; i < ModLoader.getMinecraftServerInstance().worlds.size();i++){
@@ -158,16 +171,16 @@ public class ModChecker {
 		return (World)ModLoader.getMinecraftServerInstance().worlds.get(0);
 	}
 	
-	public static void ModLoaded(BaseMod Mod){
+	public static void ModLoaded(ModContainer Mod){
 		ModList.add(Mod);
 	}
 	
-	public static void ModAddedBlockofEntity(BaseMod Mod, int[] Ids, Class<Entity>[] Entities, Class<Packet>[] Packets){
-		AddedBlockList.add(new ModAddList(Mod,Ids,Entities,Packets));
+	public static void ModAddedBlockofEntity(ModContainer Mod, int[] Ids, Class<Entity>[] Entities, Class<Packet>[] Packets, CraftingRecipe[] addedRecipies, CraftingRecipe[] removedRecipies){
+		AddedBlockList.add(new ModAddList(Mod,Ids,Entities,Packets, addedRecipies, removedRecipies));
 	}
 	
-	public static ArrayList<BaseMod> getModList(){
-		return (ArrayList<BaseMod>)ModList;
+	public static ArrayList<ModContainer> getModList(){
+		return (ArrayList<ModContainer>)ModList;
 	}
 	
 	public static ArrayList<ModAddList> getAddedBlockList(){
@@ -177,5 +190,4 @@ public class ModChecker {
 	public static String getVersion(){
 		return "v1.2.0";
 	}
-
 }

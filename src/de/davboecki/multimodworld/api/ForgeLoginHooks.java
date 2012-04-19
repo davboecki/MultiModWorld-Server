@@ -1,20 +1,9 @@
 package de.davboecki.multimodworld.api;
 
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
-import java.util.HashMap;
 
-import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 
-import net.minecraft.server.EntityPlayer;
-import net.minecraft.server.ModLoaderMp;
-import net.minecraft.server.NetLoginHandler;
-import net.minecraft.server.Packet1Login;
-import net.minecraft.server.Packet250CustomPayload;
-import forge.ForgeHooks;
-import forge.ForgeHooksServer;
-import forge.MessageManager;
 
 public class ForgeLoginHooks {
 
