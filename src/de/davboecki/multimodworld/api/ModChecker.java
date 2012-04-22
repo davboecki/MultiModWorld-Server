@@ -50,7 +50,7 @@ public class ModChecker {
 	}
 	
 	public static boolean pluginregistered() {
-		return getModWorldHandlePlugin() == null;
+		return getModWorldHandlePlugin() != null;
 	}
 	
 	private static ArrayList<ModContainer> ModList = new ArrayList<ModContainer>();
